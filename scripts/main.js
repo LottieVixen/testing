@@ -59,7 +59,7 @@ const throughputVoid = extendContent(ItemVoid, "throughput-void", {
         this.bars.add("throughput", func(entity => new Bar(
             prov(()=>"Throughput: " + Strings.fixed(entity.throughput(), 2) + "/s"),
             prov(() => Pal.items),
-            floatp(() => 1)
+            floatp(() => !this._window.hasEnoughData())
         )));
     },
     handleItem(item, tile, source) {
@@ -71,17 +71,23 @@ throughputVoid.entityType = prov(ent => extend(TileEntity, {
     _window: new WindowedMean(60*10),
     _throughput: 0,
     iIncrement() {
-        this._i++;
+        this._i+=1/Time.delta();
     },
     throughput() {
         return this._throughput;
     },
     updateThroughput() {
-        this._throughput = this._window.getMean() * (60 / Time.delta())
+        if(!this._window.hasEnoughData()) return;
+        var val = this._window.getWindowValues().slice(30, 570);
+        var m = 0;
+        val.forEach(v=>{
+            m += v;
+        });
+        this._throughput = m/val.length;
     },
     update() {
         this.super$update();
-        this._window.addValue(this._i);
+        this._window.addValue(this._i * (60 / Time.delta()));
         this._i = 0;
         this.updateThroughput();
     }
@@ -110,11 +116,17 @@ liquidThroughputVoid.entityType = prov(ent => extend(TileEntity, {
         return this._throughput;
     },
     updateThroughput() {
-        this._throughput = this._window.getMean() * (60 / Time.delta());
+        if(!this._window.hasEnoughData()) return;
+        var val = this._window.getWindowValues().slice(30, 570);
+        var m = 0;
+        val.forEach(v=>{
+            m += v;
+        });
+        this._throughput = m/val.length;
     },
     update() {
         this.super$update();
-        this._window.addValue(this._i);
+        this._window.addValue(this._i * (60 / Time.delta()));
         this._i = 0;
         this.updateThroughput();
     }
