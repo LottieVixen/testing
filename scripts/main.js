@@ -71,7 +71,7 @@ throughputVoid.entityType = prov(ent => extend(TileEntity, {
     _window: new WindowedMean(60*10),
     _throughput: 0,
     iIncrement() {
-        this._i+=1/Time.delta();
+        this._i++;
     },
     throughput() {
         return this._throughput;
