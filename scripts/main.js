@@ -98,7 +98,7 @@ const liquidThroughputVoid = extendContent(LiquidVoid, "liquid-throughput-void",
         this.bars.add("throughput", func(entity => new Bar(
             prov(()=>"Throughput: " + Strings.fixed(entity.throughput(), 2) + "/s"),
             prov(() => Pal.items),
-            floatp(() => 1)
+            floatp(() => !this._window.hasEnoughData())
         )));
     },
     handleLiquid(tile, source, liquid, amount) {
