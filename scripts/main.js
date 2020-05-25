@@ -148,4 +148,23 @@ throughputVoid.update = true;
 throughputVoid.localizedName = "Display void";
 throughputVoid.description = "Displays throughput.";
 
+const jsBlock = extendContent(MessageBlock, "js-block", {
+    setMessageBlockText(player, tile, text){
+        this.super$setMessageBlockText(player, tile, text);
+        tile.entity.message = Vars.mods.getScripts().runConsole(text);
+    },
+    tapped(tile, player){
+        this.super$tapped(tile, player);
+        tile.entity.message = Vars.mods.getScripts().runConsole(text);
+    }
+});
+
+jsBlock.health = 1;
+jsBlock.buildVisibility = BuildVisibility.sandboxOnly;
+jsBlock.requirements = [new ItemStack(Items.copper, 1)];
+jsBlock.size = 1;
+jsBlock.update = true;
+jsBlock.localizedName = "Js block";
+jsBlock.description = "Executes input text as js.";
+
 print("Testing loaded successfully");
