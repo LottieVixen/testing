@@ -1,11 +1,14 @@
+//dpsBlock
 const dpsBlock = extendContent(Wall, "dps-wall", {
     setBars() {
         this.super$setBars();
+
         this.bars.add("dtl10f", func(entity => new Bar(
             prov(()=>"DmgTkenLast10Frames: " + Strings.fixed(entity.dps(), 2)),
             prov(() => Pal.items),
             floatp(() => 1)
         )));
+
         this.bars.add("dps", func(entity => new Bar(
             prov(()=>"DPS: " + Strings.fixed(entity.dps(), 2) + "/s"),
             prov(() => Pal.items),
@@ -19,6 +22,7 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
     _window2: new WindowedMean(60),
     _dps: 0,
     _dps2: 0,
+
     iIncrement(value){
         this._i = value;
     },
@@ -50,25 +54,28 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
     },
     update() {
         this.super$update();
+
         this._window.addValue(this._i);
         this._window2.addValue(this._i);
         this._i = 0;
+
         this.updateDps();
     }
 }));
 
-indicatorBlock.health = 1;
-indicatorBlock.buildVisibility = BuildVisibility.sandboxOnly;
-indicatorBlock.requirements = [new ItemStack(Items.copper, 1)];
-indicatorBlock.size = 1;
-indicatorBlock.update = true;
-indicatorBlock.localizedName = "Indicator block";
-indicatorBlock.description = "Displays damage.";
+dpsBlock.health = 1;
+dpsBlock.buildVisibility = BuildVisibility.sandboxOnly;
+dpsBlock.requirements = [new ItemStack(Items.copper, 1)];
+dpsBlock.size = 1;
+dpsBlock.update = true;
+dpsBlock.localizedName = "Indicator block";
+dpsBlock.description = "Displays damage.";
 
 //quezler's throughput ported to 5.0
 const throughputVoid = extendContent(ItemVoid, "throughput-void", {
     setBars() {
         this.super$setBars();
+
         this.bars.add("throughput", func(entity => new Bar(
             prov(()=>"Throughput: " + Strings.fixed(entity.throughput(), 2) + "/s"),
             prov(() => Pal.items),
@@ -83,6 +90,7 @@ throughputVoid.entityType = prov(ent => extend(TileEntity, {
     _i: 0,
     _window: new WindowedMean(60*10),
     _throughput: 0,
+
     iIncrement() {
         this._i++;
     },
@@ -91,6 +99,7 @@ throughputVoid.entityType = prov(ent => extend(TileEntity, {
     },
     updateThroughput() {
         if(!this._window.hasEnoughData()) return;
+
         var val = this._window.getWindowValues().slice(30, 570);
         var m = 0;
         val.forEach(v=>{
@@ -100,14 +109,26 @@ throughputVoid.entityType = prov(ent => extend(TileEntity, {
     },
     update() {
         this.super$update();
+
         this._window.addValue(this._i * (60 * Time.delta()));
         this._i = 0;
+
         this.updateThroughput();
     }
 }));
+
+throughputVoid.health = 1;
+throughputVoid.buildVisibility = BuildVisibility.sandboxOnly;
+throughputVoid.requirements = [new ItemStack(Items.copper, 1)];
+throughputVoid.size = 1;
+throughputVoid.update = true;
+throughputVoid.localizedName = "Display void";
+throughputVoid.description = "Displays throughput.";
+
 const liquidThroughputVoid = extendContent(LiquidVoid, "liquid-throughput-void", {
     setBars() {
         this.super$setBars();
+
         this.bars.add("throughput", func(entity => new Bar(
             prov(()=>"Throughput: " + Strings.fixed(entity.throughput(), 2) + "/s"),
             prov(() => Pal.items),
@@ -122,6 +143,7 @@ liquidThroughputVoid.entityType = prov(ent => extend(TileEntity, {
     _i: 0,
     _window: new WindowedMean(60*10),
     _throughput: 0,
+
     iIncrement(value) {
         this._i+=value;
     },
@@ -130,6 +152,7 @@ liquidThroughputVoid.entityType = prov(ent => extend(TileEntity, {
     },
     updateThroughput() {
         if(!this._window.hasEnoughData()) return;
+
         var val = this._window.getWindowValues().slice(30, 570);
         var m = 0;
         val.forEach(v=>{
@@ -139,8 +162,10 @@ liquidThroughputVoid.entityType = prov(ent => extend(TileEntity, {
     },
     update() {
         this.super$update();
+
         this._window.addValue(this._i * (60 / Time.delta()));
         this._i = 0;
+
         this.updateThroughput();
     }
 }));
@@ -152,14 +177,6 @@ liquidThroughputVoid.size = 1;
 liquidThroughputVoid.update = true;
 liquidThroughputVoid.localizedName = "Liquid display void";
 liquidThroughputVoid.description = "Displays throughput.";
-
-throughputVoid.health = 1;
-throughputVoid.buildVisibility = BuildVisibility.sandboxOnly;
-throughputVoid.requirements = [new ItemStack(Items.copper, 1)];
-throughputVoid.size = 1;
-throughputVoid.update = true;
-throughputVoid.localizedName = "Display void";
-throughputVoid.description = "Displays throughput.";
 
 const jsBlock = extendContent(/*MessageBlock*/ Block, "js-block", {
     /*setMessageBlockText(player, tile, text){
