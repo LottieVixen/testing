@@ -1,46 +1,60 @@
-function DamageIndicator(damage){
-    this.time = 1;
-    this.damage = damage;
-}
 const indicatorBlock = extendContent(Wall, "indicator-wall", {
-    update(tile){
-        this.super$update(tile);
-        var entity = tile.ent();
-        entity.setLabels(entity.getLabels().filter((lable, index)=>lable.time>0));
-        entity.getLabels().forEach((lable, index)=>{
-            lable.time = Mathf.lerpDelta(lable.time, 0, 0.80);
-        });
-        var delay = entity.getDelay();
-        delay+=entity.delta();
-        entity.setDelay(delay);
-        if (delay>=10) {
-            var total = 0;
-            entity.setDelay(0);
-            entity.getLabels().forEach(label=>total+=label.damage);
-            entity.getLabels().forEach((lable, index)=>{
-                Vars.ui.showLabel(lable.damage, 0.5, tile.drawx(), tile.drawy()+8+(8*index));
-            });
-            Vars.ui.showLabel(total, 0.5, tile.drawx(), tile.drawy()-8);
-        }
-    }
+    setBars() {
+        this.super$setBars();
+        this.bars.add("dtl10f", func(entity => new Bar(
+            prov(()=>"DmgTkenLast10Frames: " + Strings.fixed(entity.dps(), 2)),
+            prov(() => Pal.items),
+            floatp(() => 1)
+        )));
+        this.bars.add("dps", func(entity => new Bar(
+            prov(()=>"DPS: " + Strings.fixed(entity.dps(), 2) + "/s"),
+            prov(() => Pal.items),
+            floatp(() => 1)
+        )));
+    },
 });
 indicatorBlock.entityType = prov(()=>extend(TileEntity, {
     _labels: [],
-    getLabels() {
-        return this._labels;
+    _i: 0,
+    _window: new WindowedMean(10),
+    _window2: new WindowedMean(60),
+    _dps: 0,
+    _dps2: 0,
+    iIncrement(value){
+        this._i = value;
     },
-    setLabels(value) {
-        this._labels = value;
+    dps(){
+        return this._dps;
     },
-    _delay: 0,
-    getDelay() {
-        return this._delay;
-    },
-    setDelay(value) {
-        this._delay = value;
+    dps10(){
+        return this._dps2;
     },
     damage(damage){
-        this.getLabels().push(new DamageIndicator(damage));
+        this.iIncrement(damage);
+    },
+    updateDps() {
+        if(!this._window2.hasEnoughData()) return;
+        var val = this._window2.getWindowValues().slice(3, 57);
+        var m = 0;
+        val.forEach(v=>{
+            m += v;
+        });
+        this._dps = m/val.length;
+        delete val, m;
+        if(!this._window.hasEnoughData()) return;
+        var val = this._window.getWindowValues().slice(1, 4);
+        var m = 0;
+        val.forEach(v=>{
+            m += v;
+        });
+        this._dps2 = m/val.length;
+    },
+    update() {
+        this.super$update();
+        this._window.addValue(this._i);
+        this._window2.addValue(this._i);
+        this._i = 0;
+        this.updateDps();
     }
 }));
 
@@ -50,7 +64,7 @@ indicatorBlock.requirements = [new ItemStack(Items.copper, 1)];
 indicatorBlock.size = 1;
 indicatorBlock.update = true;
 indicatorBlock.localizedName = "Indicator block";
-indicatorBlock.description = "Displays damage as labels, Sum of damage recieved in the last second(not exact) is displayed on the bottom.\n\n[yellow]Disclamer: Total damage recieved is not exactly dps.";
+indicatorBlock.description = "Displays damage.";
 
 //quezler's throughput ported to 5.0
 const throughputVoid = extendContent(ItemVoid, "throughput-void", {
@@ -87,7 +101,7 @@ throughputVoid.entityType = prov(ent => extend(TileEntity, {
     },
     update() {
         this.super$update();
-        this._window.addValue(this._i * (60 / Time.delta()));
+        this._window.addValue(this._i * (60 * Time.delta()));
         this._i = 0;
         this.updateThroughput();
     }
@@ -161,7 +175,7 @@ const jsBlock = extendContent(/*MessageBlock*/ Block, "js-block", {
 });
 
 jsBlock.health = 1;
-jsBlock.buildVisibility = BuildVisibility.sandboxOnly;
+jsBlock.buildVisibility = Vars.mobile ? BuildVisibility.sandboxOnly : BuildVisibility.hidden;
 jsBlock.requirements = [new ItemStack(Items.copper, 1)];
 jsBlock.size = 1;
 jsBlock.update = true;
