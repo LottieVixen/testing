@@ -148,14 +148,15 @@ throughputVoid.update = true;
 throughputVoid.localizedName = "Display void";
 throughputVoid.description = "Displays throughput.";
 
-const jsBlock = extendContent(MessageBlock, "js-block", {
-    setMessageBlockText(player, tile, text){
-        this.super$setMessageBlockText(player, tile, text);
-        tile.entity.message = Vars.mods.getScripts().runConsole(text);
-    },
+const jsBlock = extendContent(/*MessageBlock*/ Block, "js-block", {
+    /*setMessageBlockText(player, tile, text){
+        var h = Vars.mods.getScripts().runConsole(text);
+        this.super$setMessageBlockText(player, tile, h);
+    },*/
     tapped(tile, player){
-        this.super$tapped(tile, player);
-        tile.entity.message = Vars.mods.getScripts().runConsole(text);
+        //this.super$tapped(tile, player);
+        //tile.entity.message = Vars.mods.getScripts().runConsole(tile.entity.message);
+        Vars.ui.scriptfrag.toggle();
     }
 });
 
@@ -165,6 +166,6 @@ jsBlock.requirements = [new ItemStack(Items.copper, 1)];
 jsBlock.size = 1;
 jsBlock.update = true;
 jsBlock.localizedName = "Js block";
-jsBlock.description = "Executes input text as js.";
+//jsBlock.description = "Executes input text as js.";
 
 print("Testing loaded successfully");
