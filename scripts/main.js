@@ -1,4 +1,4 @@
-const indicatorBlock = extendContent(Wall, "indicator-wall", {
+const dpsBlock = extendContent(Wall, "dps-wall", {
     setBars() {
         this.super$setBars();
         this.bars.add("dtl10f", func(entity => new Bar(
@@ -13,8 +13,7 @@ const indicatorBlock = extendContent(Wall, "indicator-wall", {
         )));
     },
 });
-indicatorBlock.entityType = prov(()=>extend(TileEntity, {
-    _labels: [],
+dpsBlock.entityType = prov(()=>extend(TileEntity, {
     _i: 0,
     _window: new WindowedMean(10),
     _window2: new WindowedMean(60),
@@ -180,6 +179,6 @@ jsBlock.requirements = [new ItemStack(Items.copper, 1)];
 jsBlock.size = 1;
 jsBlock.update = true;
 jsBlock.localizedName = "Js block";
-//jsBlock.description = "Executes input text as js.";
+jsBlock.description = "Executes input text as js.";
 
 print("Testing loaded successfully");
