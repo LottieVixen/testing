@@ -68,10 +68,11 @@ dpsBlock.buildVisibility = BuildVisibility.sandboxOnly;
 dpsBlock.requirements = [new ItemStack(Items.copper, 1)];
 dpsBlock.size = 1;
 dpsBlock.update = true;
-dpsBlock.localizedName = "Indicator block";
-dpsBlock.description = "Displays damage.";
+dpsBlock.localizedName = "Dps block";
+dpsBlock.description = "Displays damage per second.";
 
 //quezler's throughput ported to 5.0
+var delta = false;
 const throughputVoid = extendContent(ItemVoid, "throughput-void", {
     setBars() {
         this.super$setBars();
@@ -110,7 +111,7 @@ throughputVoid.entityType = prov(ent => extend(TileEntity, {
     update() {
         this.super$update();
 
-        this._window.addValue(this._i * (60 * Time.delta()));
+        this._window.addValue(this._i * (delta ? 60 * Time.delta() : 60));
         this._i = 0;
 
         this.updateThroughput();
@@ -123,7 +124,7 @@ throughputVoid.requirements = [new ItemStack(Items.copper, 1)];
 throughputVoid.size = 1;
 throughputVoid.update = true;
 throughputVoid.localizedName = "Display void";
-throughputVoid.description = "Displays throughput.";
+throughputVoid.description = "Displays throughput. Type t!delta into the chat to disable or enable deltatime on calculations.";
 
 const liquidThroughputVoid = extendContent(LiquidVoid, "liquid-throughput-void", {
     setBars() {
@@ -163,7 +164,7 @@ liquidThroughputVoid.entityType = prov(ent => extend(TileEntity, {
     update() {
         this.super$update();
 
-        this._window.addValue(this._i * (60 / Time.delta()));
+        this._window.addValue(this._i * (delta ? 60 * Time.delta(): 60));
         this._i = 0;
 
         this.updateThroughput();
@@ -198,4 +199,13 @@ jsBlock.update = true;
 jsBlock.localizedName = "Js block";
 jsBlock.description = "Executes input text as js.";
 
+if(!this.global.done){
+    this.global.done = true;
+    Events.on(EventType.PlayerChatEvent, cons(e=>{
+        if(e.message=="t!delta"){
+            Call.sendChatMessage((delta ? "Disabled " : "Enabled ") + "throughput deltatime");
+            delta = !delta
+        }
+    }));
+}
 print("Testing loaded successfully");
