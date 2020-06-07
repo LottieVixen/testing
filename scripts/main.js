@@ -1,25 +1,39 @@
 //dpsBlock
-const dpsUnit = new UnitType("dps-unit", prov(a => extend(BaseUnit, {
-    damage(d){
-        this.spawner.damage(d);
+const dpsUnit = UnitType("dps-unit", prov(a => extend(GroundUnit, {
+    _owner: null,
+    damage(amount) {
+        this._owner.entity.damage(amount);
+    },
+    setOwner(tile){
+        this._owner = tile;
+    },
+    behavior(){},
+    updateTargeting(){
+        this.target = null;
+    },
+    update(){
+        if(this._owner.entity == null || !(this._owner.entity instanceof dpsBlock)) this.setDead(true);
+        this.super$update();
+    },
+    countsAsEnemy(){
+        return false;
     }
 })));
 dpsUnit.drag = 1;
-dpsUnitspeed = 0;
+dpsUnit.speed = 0;
 dpsUnit.maxVelocity = 0;
 dpsUnit.range = 0;
 dpsUnit.health = 1;
-dpsUnit.weapon = extendContent(Weapon, "you have incurred my wrath. prepare to die.", {
-    bullet: Bullets.lancerLaser
-});
+dpsUnit.weapon = UnitTypes.draug.weapon;
 
-const dpsBlock = extendContent(Wall, "dps-wall", {
+const dpsBlock = extendContent(Block, "dps-wall", {
     placed(tile){
         this.super$placed(tile);
         if(Vars.net.client()) return;
         var unit = dpsUnit.create(Team.crux);
         unit.set(tile.drawx(), tile.drawy());
-        unit.setSpawner(tile);
+        unit.setOwner(tile);
+        unit.rotation;
         unit.add();
     },
     setBars() {
@@ -36,7 +50,7 @@ const dpsBlock = extendContent(Wall, "dps-wall", {
             prov(() => Pal.items),
             floatp(() => 1)
         )));
-    },
+    }
 });
 dpsBlock.entityType = prov(()=>extend(TileEntity, {
     _i: 0,
@@ -91,6 +105,7 @@ dpsBlock.buildVisibility = BuildVisibility.sandboxOnly;
 dpsBlock.requirements = [new ItemStack(Items.copper, 1)];
 dpsBlock.size = 1;
 dpsBlock.update = true;
+dpsBlock.layer = Layer.overlay;
 dpsBlock.localizedName = "Dps block";
 dpsBlock.description = "Displays damage per second.";
 
