@@ -1,5 +1,27 @@
 //dpsBlock
+const dpsUnit = new UnitType("dps-unit", prov(a => extend(BaseUnit, {
+    damage(d){
+        this.spawner.damage(d);
+    }
+})));
+dpsUnit.drag = 1;
+dpsUnitspeed = 0;
+dpsUnit.maxVelocity = 0;
+dpsUnit.range = 0;
+dpsUnit.health = 1;
+dpsUnit.weapon = extendContent(Weapon, "you have incurred my wrath. prepare to die.", {
+    bullet: Bullets.lancerLaser
+});
+
 const dpsBlock = extendContent(Wall, "dps-wall", {
+    placed(tile){
+        this.super$placed(tile);
+        if(Vars.net.client()) return;
+        var unit = dpsUnit.create(Team.crux);
+        unit.set(tile.drawx(), tile.drawy());
+        unit.setSpawner(tile);
+        unit.add();
+    },
     setBars() {
         this.super$setBars();
 
@@ -64,6 +86,7 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
 }));
 
 dpsBlock.health = 1;
+dpsBlock.solid = false;
 dpsBlock.buildVisibility = BuildVisibility.sandboxOnly;
 dpsBlock.requirements = [new ItemStack(Items.copper, 1)];
 dpsBlock.size = 1;
