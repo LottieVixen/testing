@@ -77,7 +77,7 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
     updateDps() {
         this._dps2 = this._window.getMean();
         if(!this._window.hasEnoughData()) return;
-        var val = this._window.getWindowValues().slice(3, 57);
+        var val = this._window.getWindowValues().slice(30, 570);
         var m = 0;
         val.forEach(v=>{
             m += v;
