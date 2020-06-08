@@ -5,6 +5,7 @@ const dpsUnit = UnitType("dps-unit", prov(a => extend(GroundUnit,
     _owner: null,
     _ownerEnt: null,
     damage(amount) {
+        //reuse impl
         this._ownerEnt.damage(amount);
     },
     setOwner(tile){
