@@ -1,19 +1,23 @@
 //dpsBlock
 const dpsUnit = UnitType("dps-unit", prov(a => extend(GroundUnit, {
     _owner: null,
+    _ownerEnt: null,
     damage(amount) {
-        this._owner.entity.damage(amount);
+        this._ownerEnt.damage(amount);
     },
     setOwner(tile){
         this._owner = tile;
+        this._ownerEnt = tile.ent();
     },
     behavior(){},
     updateTargeting(){
         this.target = null;
     },
     update(){
-        if(this._owner.entity == null || !(this._owner.entity instanceof dpsBlock)) this.setDead(true);
-        this.super$update();
+        if(this._owner.entity != this._ownerEnt) this.setDead(true);
+        if(this.isDead()) {
+            this.remove();
+        }
     },
     countsAsEnemy(){
         return false;
@@ -33,20 +37,19 @@ const dpsBlock = extendContent(Block, "dps-wall", {
         var unit = dpsUnit.create(Team.crux);
         unit.set(tile.drawx(), tile.drawy());
         unit.setOwner(tile);
-        unit.rotation;
         unit.add();
     },
     setBars() {
         this.super$setBars();
 
         this.bars.add("dtl10f", func(entity => new Bar(
-            prov(()=>"DmgTkenLast10Frames: " + Strings.fixed(entity.dps(), 2)),
+            prov(()=>"DPS: " + Strings.fixed(entity.dps2(), 2)),
             prov(() => Pal.items),
             floatp(() => 1)
         )));
 
         this.bars.add("dps", func(entity => new Bar(
-            prov(()=>"DPS: " + Strings.fixed(entity.dps(), 2) + "/s"),
+            prov(()=>"DPSp: " + Strings.fixed(entity.dps(), 2) + "/s"),
             prov(() => Pal.items),
             floatp(() => 1)
         )));
@@ -54,7 +57,7 @@ const dpsBlock = extendContent(Block, "dps-wall", {
 });
 dpsBlock.entityType = prov(()=>extend(TileEntity, {
     _i: 0,
-    _window: new WindowedMean(10),
+    _window: new WindowedMean(60),
     _window2: new WindowedMean(60),
     _dps: 0,
     _dps2: 0,
@@ -65,13 +68,14 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
     dps(){
         return this._dps;
     },
-    dps10(){
+    dps2(){
         return this._dps2;
     },
     damage(damage){
         this.iIncrement(damage);
     },
     updateDps() {
+        this._dps2 = this._window2.getMean();
         if(!this._window2.hasEnoughData()) return;
         var val = this._window2.getWindowValues().slice(3, 57);
         var m = 0;
@@ -79,20 +83,12 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
             m += v;
         });
         this._dps = m/val.length;
-        delete val, m;
-        if(!this._window.hasEnoughData()) return;
-        var val = this._window.getWindowValues().slice(1, 4);
-        var m = 0;
-        val.forEach(v=>{
-            m += v;
-        });
-        this._dps2 = m/val.length;
     },
     update() {
         this.super$update();
 
-        this._window.addValue(this._i);
-        this._window2.addValue(this._i);
+        this._window.addValue(this._i * 60);
+        this._window2.addValue(this._i * 60);
         this._i = 0;
 
         this.updateDps();
