@@ -42,6 +42,7 @@ dpsUnit.weapon = UnitTypes.draug.weapon;
 const dpsBlock = extendContent(Block, "dps-wall", {
     placed(tile){
         this.super$placed(tile);
+
         if(Vars.net.client()) return;
         var unit = dpsUnit.create(Team.crux);
         unit.set(tile.drawx(), tile.drawy());
