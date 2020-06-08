@@ -21,7 +21,8 @@ const dpsUnit = UnitType("dps-unit", prov(a => extend(GroundUnit, {
     },
     countsAsEnemy(){
         return false;
-    }
+    },
+    drawAll(){}
 })));
 dpsUnit.drag = 1;
 dpsUnit.speed = 0;
@@ -58,12 +59,11 @@ const dpsBlock = extendContent(Block, "dps-wall", {
 dpsBlock.entityType = prov(()=>extend(TileEntity, {
     _i: 0,
     _window: new WindowedMean(60),
-    _window2: new WindowedMean(60),
     _dps: 0,
     _dps2: 0,
 
     iIncrement(value){
-        this._i = value;
+        this._i += value;
     },
     dps(){
         return this._dps;
@@ -75,9 +75,9 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
         this.iIncrement(damage);
     },
     updateDps() {
-        this._dps2 = this._window2.getMean();
-        if(!this._window2.hasEnoughData()) return;
-        var val = this._window2.getWindowValues().slice(3, 57);
+        this._dps2 = this._window.getMean();
+        if(!this._window.hasEnoughData()) return;
+        var val = this._window.getWindowValues().slice(3, 57);
         var m = 0;
         val.forEach(v=>{
             m += v;
@@ -88,7 +88,6 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
         this.super$update();
 
         this._window.addValue(this._i * 60);
-        this._window2.addValue(this._i * 60);
         this._i = 0;
 
         this.updateDps();
@@ -103,7 +102,7 @@ dpsBlock.size = 1;
 dpsBlock.update = true;
 dpsBlock.layer = Layer.overlay;
 dpsBlock.localizedName = "Dps block";
-dpsBlock.description = "Displays damage per second.";
+dpsBlock.description = "Displays damage per second.\n\nSecond value shows percentile";
 
 //quezler's throughput ported to 5.0
 var delta = false;
