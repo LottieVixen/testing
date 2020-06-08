@@ -1,5 +1,7 @@
 //dpsBlock
-const dpsUnit = UnitType("dps-unit", prov(a => extend(GroundUnit, {
+var noPierce = false;
+const dpsUnit = UnitType("dps-unit", prov(a => extend(GroundUnit, 
+    //this.spawner = bad
     _owner: null,
     _ownerEnt: null,
     damage(amount) {
@@ -22,7 +24,12 @@ const dpsUnit = UnitType("dps-unit", prov(a => extend(GroundUnit, {
     countsAsEnemy(){
         return false;
     },
-    drawAll(){}
+    drawAll(){},
+    onHit(b){
+        this.super$onHit(b);
+        if(!(b instanceof Bullet)) return;
+        if(b.getBulletType().pierce && noPierce) b.remove();
+    }
 })));
 dpsUnit.drag = 1;
 dpsUnit.speed = 0;
@@ -102,7 +109,7 @@ dpsBlock.size = 1;
 dpsBlock.update = true;
 dpsBlock.layer = Layer.overlay;
 dpsBlock.localizedName = "Dps block";
-dpsBlock.description = "Displays damage per second.\n\nSecond value shows percentile";
+dpsBlock.description = "Displays damage per second. Type t!flying in chat to toggle flying.\n\nSecond value shows percentile";
 
 //quezler's throughput ported to 5.0
 var delta = false;
@@ -236,8 +243,16 @@ if(!this.global.done){
     this.global.done = true;
     Events.on(EventType.PlayerChatEvent, cons(e=>{
         if(e.message=="t!delta"){
-            Call.sendChatMessage((delta ? "Disabled " : "Enabled ") + "throughput deltatime");
-            delta = !delta
+            Call.sendChatMessage("Toggled throughput deltatime");
+            delta = !delta;
+        }
+        if(e.message=="t!flying"){
+            Call.sendChatMessage("Toggled flying for dpsBlock");
+            dpsUnit.flying = !flying;
+        }
+        if(e.message=="t!nopierce"){
+            Call.sendChatMessage("Toggled piercing for dpsBlock");
+            noPierce = !noPierce;
         }
     }));
 }
