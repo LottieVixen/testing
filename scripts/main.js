@@ -58,7 +58,7 @@ const dpsBlock = extendContent(Block, "dps-wall", {
 });
 dpsBlock.entityType = prov(()=>extend(TileEntity, {
     _i: 0,
-    _window: new WindowedMean(60),
+    _window: new WindowedMean(600),
     _dps: 0,
     _dps2: 0,
 
