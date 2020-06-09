@@ -41,7 +41,7 @@ dpsUnit.range = 0;
 dpsUnit.health = 1;
 dpsUnit.weapon = UnitTypes.draug.weapon;
 
-const dpsBlock = extendContent(Block, "dps-wall", {
+const dpsBlock = extendContent(Wall, "dps-wall", {
     placed(tile){
         this.super$placed(tile);
 
@@ -69,7 +69,7 @@ const dpsBlock = extendContent(Block, "dps-wall", {
 });
 dpsBlock.entityType = prov(()=>extend(TileEntity, {
     _i: 0,
-    _window: new WindowedMean(600),
+    _window: new WindowedMean(60*60),
     _dps: 0,
     _dps2: 0,
 
@@ -113,7 +113,7 @@ dpsBlock.size = 1;
 dpsBlock.update = true;
 dpsBlock.layer = Layer.overlay;
 dpsBlock.localizedName = "Dps block";
-dpsBlock.description = "Displays damage per second. Type t!flying in chat to toggle flying.\n\nSecond value shows percentile";
+dpsBlock.description = "Measures damage per second over a minute. Type t!flying in chat to toggle flying.\n\nSecond value shows percentile";
 
 //quezler's throughput ported to 5.0
 var delta = false;
