@@ -1,9 +1,11 @@
 //dpsBlock
 var noPierce = false;
-const dpsUnit = UnitType("dps-unit", prov(a => extend(GroundUnit, 
+const dpsUnit = UnitType("dps-unit", prov(a => extend(GroundUnit, {
     //this.spawner = bad
+
     _owner: null,
     _ownerEnt: null,
+
     damage(amount) {
         //reuse impl
         this._ownerEnt.damage(amount);
