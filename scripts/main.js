@@ -278,7 +278,7 @@ if(!this.global.done){
         }
         if(e.message=="t!flying"){
             Call.sendChatMessage("Toggled flying for dpsBlock");
-            dpsUnit.flying = !flying;
+            dpsUnit.flying = !dpsUnit.flying;
         }
         if(e.message=="t!nopierce"){
             Call.sendChatMessage("Toggled piercing for dpsBlock");
