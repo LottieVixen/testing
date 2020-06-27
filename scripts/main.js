@@ -80,13 +80,13 @@ const dpsBlock = extendContent(Wall, "dps-wall", {
     setBars() {
         this.super$setBars();
 
-        this.bars.add("dtl10f", func(entity => new Bar(
+        this.bars.add("dps", func(entity => new Bar(
             prov(()=>"DPS: " + Strings.fixed(entity.dps2(), 2)),
             prov(() => Pal.items),
             floatp(() => 1)
         )));
 
-        this.bars.add("dps", func(entity => new Bar(
+        this.bars.add("dpsp", func(entity => new Bar(
             prov(()=>"DPSp: " + Strings.fixed(entity.dps(), 2) + "/s"),
             prov(() => Pal.items),
             floatp(() => 1)
@@ -95,7 +95,7 @@ const dpsBlock = extendContent(Wall, "dps-wall", {
 });
 dpsBlock.entityType = prov(()=>extend(TileEntity, {
     _i: 0,
-    _window: new WindowedMean(60*60),
+    _window: new WindowedMean(60*10),
     _dps: 0,
     _dps2: 0,
 
@@ -181,7 +181,7 @@ throughputVoid.entityType = prov(ent => extend(TileEntity, {
     update() {
         this.super$update();
 
-        this._window.addValue(this._i * (delta ? 60 * Time.delta() : 60));
+        this._window.addValue(this._i * (delta ? 60 / Time.delta() : 60));
         this._i = 0;
 
         this.updateThroughput();
@@ -234,7 +234,7 @@ liquidThroughputVoid.entityType = prov(ent => extend(TileEntity, {
     update() {
         this.super$update();
 
-        this._window.addValue(this._i * (delta ? 60 * Time.delta(): 60));
+        this._window.addValue(this._i * (delta ? 60 / Time.delta(): 60));
         this._i = 0;
 
         this.updateThroughput();
