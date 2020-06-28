@@ -18,16 +18,13 @@ const unitSpawner = extendContent(Block, "unit-spawner", {
         dialog.setFillParent(true);
         dialog.cont.pane(cons(p => {
             var i = 0;
-            print("h");
             var units = Vars.content.units();
             units.each(cons(type=>{
                 p.addButton(cons(t => {
-                    print(type);
                     t.left();
                     t.addImage(type.icon(Cicon.medium)).size(40).padRight(2);
                     t.add(type.localizedName);
                 }), run(() => {
-                    print(type);
                     tile.entity.setUnit(type);
                     dialog.hide();
                 })).pad(2).margin(12).fillX();
@@ -37,7 +34,6 @@ const unitSpawner = extendContent(Block, "unit-spawner", {
         dialog.show();
     },
     configured(tile, player, value){
-        print("ok")
         //yes im terrible at this
         var handle = [
            (tile) => this.pick(tile),
@@ -48,10 +44,7 @@ const unitSpawner = extendContent(Block, "unit-spawner", {
            },
            (tile) => tile.entity.setTeam(tile.entity.team() == Team.sharded ? Team.crux : Team.sharded)
         ];
-        print(value);
-        print("defined");
         handle[value](tile);
-        print("nice");
     }
 });
 unitSpawner.entityType = prov(() => extend(TileEntity, {
