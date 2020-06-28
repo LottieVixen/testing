@@ -45,7 +45,8 @@ const unitSpawner = extendContent(Block, "unit-spawner", {
            (tile) => tile.entity.setTeam(tile.entity.team() == Team.sharded ? Team.crux : Team.sharded)
         ];
         handle[value](tile);
-    }
+    },
+    damage(amount){}
 });
 unitSpawner.entityType = prov(() => extend(TileEntity, {
     _unit: UnitTypes.dagger,
