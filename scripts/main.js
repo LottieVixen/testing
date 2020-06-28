@@ -86,7 +86,7 @@ const dpsTurret = extendContent(ItemTurret, "dps-turret", {
     },
     drawLayer(tile){},
     findTarget(tile){
-        tile.entity.target = Units.closestEnemy(Team.crux, tile.drawx(), tile.drawy(), range);
+        tile.entity.target = Units.closestEnemy(Team.crux, tile.drawx(), tile.drawy(), this.range);
     }
 });
 dpsTurret.entityType = prov(() => {
