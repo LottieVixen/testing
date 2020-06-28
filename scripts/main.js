@@ -85,9 +85,15 @@ const dpsTurret = extendContent(ItemTurret, "dps-turret", {
         }
     },
     drawLayer(tile){},
+    validateTarget(tile){
+        var ent = tile.ent();
+        return !(ent.target == null || (!ent.target.withinDst(tile.drawx(), tile.drawy(), this.range)) || !ent.target.isValid());
+    },
     findTarget(tile){
-        tile.entity.target = Units.closestEnemy(Team.crux, tile.drawx(), tile.drawy(), this.range);
-    }
+        tile.entity.target = Units.closestTarget(Team.green, tile.drawx(), tile.drawy(), this.range, boolf(e=>true), boolf(e => !e.entity.isDead() && e.entity.block.name!="testing-dps-turret" ));
+    },
+    hasAmmo(tile){ return true },
+    peekAmmo(tile){ return Bullets.standardCopper }
 });
 dpsTurret.entityType = prov(() => {
     var unit = extendContent(ItemTurret.ItemTurretEntity, dpsTurret, {
@@ -98,11 +104,13 @@ dpsTurret.entityType = prov(() => {
         setDmg(value){
             this._dmg = value;
         }
+        
     });
+    unit.block = dpsTurret;
     return unit;
 });
 
-dpsTurret.health = 1;
+dpsTurret.health = 100;
 dpsTurret.reload = 10;
 dpsTurret.size = 2;
 dpsTurret.category = Category.turret;
