@@ -1,3 +1,128 @@
+//unitSpawner
+const unitSpawner = extendContent(Block, "unit-spawner", {
+    buildConfiguration(tile, table){
+        table.addImageButton(Icon.wrench, Styles.clearTransi, run(() => {
+            tile.configure(0);
+        })).size(50).disabled(boolf(b => tile.entity == null));
+
+        table.addImageButton(Icon.upOpen, Styles.clearTransi, run(() => {
+            tile.configure(1);
+        })).size(50).disabled(boolf(b => tile.entity == null));
+
+        table.addImageButton(Icon.defense, Styles.clearTransi, run(() => {
+            tile.configure(2);
+        })).size(50).disabled(boolf(b => tile.entity == null));
+    },
+    pick(tile){
+        const dialog = new FloatingDialog("");
+        dialog.setFillParent(true);
+        dialog.cont.pane(cons(p => {
+            var i = 0;
+            print("h");
+            var units = Vars.content.units();
+            units.each(cons(type=>{
+                p.addButton(cons(t => {
+                    print(type);
+                    t.left();
+                    t.addImage(type.icon(Cicon.medium)).size(40).padRight(2);
+                    t.add(type.localizedName);
+                }), run(() => {
+                    print(type);
+                    tile.entity.setUnit(type);
+                    dialog.hide();
+                })).pad(2).margin(12).fillX();
+                if(++i % 3 == 0) p.row();
+            }));
+        }));
+        dialog.show();
+    },
+    configured(tile, player, value){
+        print("ok")
+        //yes im terrible at this
+        var handle = [
+           (tile) => this.pick(tile),
+           (tile) => {
+               var unit = tile.entity.unit().create(tile.entity.team());
+               unit.set(tile.entity.getX(), tile.entity.getY());
+               unit.add();
+           },
+           (tile) => tile.entity.setTeam(tile.entity.team() == Team.sharded ? Team.crux : Team.sharded)
+        ];
+        print(value);
+        print("defined");
+        handle[value](tile);
+        print("nice");
+    }
+});
+unitSpawner.entityType = prov(() => extend(TileEntity, {
+    _unit: UnitTypes.dagger,
+    _team: Team.crux,
+    unit(){ return this._unit },
+    setUnit(unit){ this._unit = unit },
+    team(){ return this._team },
+    setTeam(team){ this._team = team }
+}));
+
+unitSpawner.health = 1;
+unitSpawner.solid = false;
+unitSpawner.configurable = true;
+unitSpawner.buildVisibility = BuildVisibility.sandboxOnly;
+unitSpawner.requirements = [new ItemStack(Items.copper, 1)];
+unitSpawner.size = 1;
+unitSpawner.update = true;
+unitSpawner.localizedName = "Unit Spawner";
+unitSpawner.description = "";
+//dpsTurret
+//stripped down turret
+const dpsTurret = extendContent(ItemTurret, "dps-turret", {
+    tapped(tile){
+        var ent = tile.ent();
+        var dmg = ent.getDmg();
+        Vars.ui.showTextInput("DPS", "DPS", (dmg*6).toString(), cons(string => ent.setDmg(string.valueOf()/6)));
+    },
+    updateShooting(tile){
+        var entity = tile.ent();
+
+        if(entity.reload >= this.reload){
+            entity.target.damage(entity.getDmg());
+
+            entity.reload = 0;
+        }else{
+            entity.reload += tile.entity.delta() * this.baseReloadSpeed(tile);
+        }
+    },
+    drawLayer(tile){},
+    findTarget(tile){
+        tile.entity.target = Units.closestEnemy(Team.crux, tile.drawx(), tile.drawy(), range);
+    }
+});
+dpsTurret.entityType = prov(() => {
+    var unit = extendContent(ItemTurret.ItemTurretEntity, dpsTurret, {
+        _dmg: 10,
+        getDmg(){
+            return this._dmg;
+        },
+        setDmg(value){
+            this._dmg = value;
+        }
+    });
+    return unit;
+});
+
+dpsTurret.health = 1;
+dpsTurret.reload = 10;
+dpsTurret.size = 2;
+dpsTurret.category = Category.turret;
+dpsTurret.shootCone = 22.5;
+dpsTurret.buildVisibility = BuildVisibility.sandboxOnly;
+dpsTurret.localizedName = "Dps Turret";
+dpsTurret.range = 100;
+dpsTurret.description = "stripped down turret that deals damage according to input, does not shoot actual bullets!";
+dpsTurret.requirements = ItemStack.with(Items.copper, 1);
+dpsTurret.ammo(
+    Items.copper, Bullets.standardCopper
+);
+
 //infoNode
 const iNode = extendContent(PowerNode, "info-node", {
     setBars(){
