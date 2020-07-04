@@ -1,7 +1,7 @@
 //quezler's throughput ported to 5.0
 this.global.delta = false;
 const throughputVoid = extendContent(ItemVoid, "throughput-void", {
-    setBars() {
+    setBars(){
         this.super$setBars();
 
         this.bars.add("throughput", func(entity => new Bar(
@@ -10,22 +10,17 @@ const throughputVoid = extendContent(ItemVoid, "throughput-void", {
             floatp(() => 1)
         )));
     },
-    handleItem(item, tile, source) {
-        tile.entity.iIncrement();
-    }
+    handleItem(item, tile, source){ tile.entity.iIncrement() }
 });
 throughputVoid.entityType = prov(ent => extend(TileEntity, {
     _i: 0,
     _window: new WindowedMean(60*10),
     _throughput: 0,
 
-    iIncrement() {
-        this._i++;
-    },
-    throughput() {
-        return this._throughput;
-    },
-    updateThroughput() {
+    iIncrement(){ this._i++ },
+    throughput(){ return this._throughput },
+
+    updateThroughput(){
         if(!this._window.hasEnoughData()) return;
 
         var val = this._window.getWindowValues().slice(30, 570);
@@ -35,7 +30,7 @@ throughputVoid.entityType = prov(ent => extend(TileEntity, {
         });
         this._throughput = m/val.length;
     },
-    update() {
+    update(){
         this.super$update();
 
         this._window.addValue(this._i * (this.global.delta ? 60 / Time.delta() : 60));
@@ -54,7 +49,7 @@ throughputVoid.localizedName = "Display void";
 throughputVoid.description = "Displays throughput. Type t!delta into the chat to disable or enable deltatime on calculations.";
 
 const liquidThroughputVoid = extendContent(LiquidVoid, "liquid-throughput-void", {
-    setBars() {
+    setBars(){
         this.super$setBars();
 
         this.bars.add("throughput", func(entity => new Bar(
@@ -63,22 +58,17 @@ const liquidThroughputVoid = extendContent(LiquidVoid, "liquid-throughput-void",
             floatp(() => 1)
         )));
     },
-    handleLiquid(tile, source, liquid, amount) {
-        tile.entity.iIncrement(amount);
-    }
+    handleLiquid(tile, source, liquid, amount) { tile.entity.iIncrement(amount) }
 });
 liquidThroughputVoid.entityType = prov(ent => extend(TileEntity, {
     _i: 0,
     _window: new WindowedMean(60*10),
     _throughput: 0,
 
-    iIncrement(value) {
-        this._i+=value;
-    },
-    throughput() {
-        return this._throughput;
-    },
-    updateThroughput() {
+    iIncrement(value){ this._i += value },
+    throughput(){ return this._throughput },
+
+    updateThroughput(){
         if(!this._window.hasEnoughData()) return;
 
         var val = this._window.getWindowValues().slice(30, 570);
@@ -88,7 +78,7 @@ liquidThroughputVoid.entityType = prov(ent => extend(TileEntity, {
         });
         this._throughput = m/val.length;
     },
-    update() {
+    update(){
         this.super$update();
 
         this._window.addValue(this._i * (this.global.delta ? 60 / Time.delta(): 60));

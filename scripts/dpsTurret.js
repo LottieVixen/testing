@@ -17,12 +17,10 @@ const dpsTurret = extendContent(ItemTurret, "dps-turret", {
             entity.reload += tile.entity.delta() * this.baseReloadSpeed(tile);
         }
     },
-
     validateTarget(tile){
         var ent = tile.ent();
         return !(ent.target == null || (!ent.target.withinDst(tile.drawx(), tile.drawy(), this.range)) || !ent.target.isValid());
     },
-
     findTarget(tile){
         tile.entity.target = Units.closestTarget(Team.green, tile.drawx(), tile.drawy(), this.range, boolf(e=>true), boolf(e => !e.entity.isDead() && e.entity.block.name!="testing-dps-turret" ));
     },
