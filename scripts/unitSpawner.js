@@ -44,18 +44,18 @@ const unitSpawner = extendContent(Block, "unit-spawner", {
         var handle = [
             (tile) => this.pick(tile),
             (tile) => {
-                var unit = tile.entity.unit().create(Team.get(tile.entity.team()));
+                var unit = tile.entity.unit().create(tile.entity.team());
                 unit.set(tile.entity.getX(), tile.entity.getY());
                 unit.add();
             },
-            (tile) => tile.entity.setTeam((tile.entity.team() + 1) > 5 ? 0 : tile.entity.team() + 1)
+            (tile) => tile.entity.setTeam((tile.entity.team().id + 1) > 5 ? 0 : tile.entity.team().id + 1)
         ];
 
         handle[value](tile);
     },
 
     drawLayer(tile){
-        Draw.mixcol(Team.get(tile.entity.team()).color, 1.0);
+        Draw.mixcol(tile.entity.team().color, 1.0);
         Draw.rect(tile.entity.unit().icon(Cicon.medium), tile.drawx(), tile.drawy(), 5, 5);
         Draw.mixcol();
     },
@@ -65,12 +65,12 @@ const unitSpawner = extendContent(Block, "unit-spawner", {
 });
 unitSpawner.entityType = prov(() => extend(TileEntity, {
     _unit: UnitTypes.dagger,
-    _team: 1,
+    _team: Team.sharded,
 
     unit(){ return this._unit },
     setUnit(unit){ this._unit = unit },
     team(){ return this._team },
-    setTeam(team){ this._team = team },
+    setTeam(team){ this._team = Team.get(team) },
     damage(amount){}
 }));
 

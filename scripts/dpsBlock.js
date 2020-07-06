@@ -10,23 +10,19 @@ const dpsUnit = new UnitType("dps-unit", prov(a => extend(GroundUnit, {
         //reuse impl
         this._ownerEnt.damage(amount);
     },
-
     setOwner(tile){
         this._owner = tile;
         this._ownerEnt = tile.ent();
     },
-
     updateTargeting(){
         this.target = null;
     },
-
     update(){
         if(this._owner.entity != this._ownerEnt) this.setDead(true);
         if(this.isDead()) {
             this.remove();
         }
     },
-
     onHit(b){
         this.super$onHit(b);
         if(!(b instanceof Bullet)) return;
@@ -80,6 +76,7 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
     dps(){ return this._dps },
     dps2(){ return this._dps2 },
     damage(damage){ this.iIncrement(damage) },
+
     updateDps() {
         this._dps2 = this._window.getMean();
         if(!this._window.hasEnoughData()) return;

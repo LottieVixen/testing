@@ -3,6 +3,7 @@ require("dpsTurret")
 require("iNode");
 require("dpsBlock");
 require("throughputVoid");
+require("mechTester")
 
 if(!this.global.done){
     this.global.done = true;
