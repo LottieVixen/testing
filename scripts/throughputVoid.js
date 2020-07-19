@@ -1,5 +1,6 @@
 //quezler's throughput ported to 5.0
 this.global.delta = false;
+const getDelta = () => this.global.delta;
 const throughputVoid = extendContent(ItemVoid, "throughput-void", {
     setBars(){
         this.super$setBars();
@@ -33,7 +34,7 @@ throughputVoid.entityType = prov(ent => extend(TileEntity, {
     update(){
         this.super$update();
 
-        this._window.addValue(this._i * (this.global.delta ? 60 / Time.delta() : 60));
+        this._window.addValue(this._i * (getDelta() ? 60 / Time.delta() : 60));
         this._i = 0;
 
         this.updateThroughput();
@@ -81,7 +82,7 @@ liquidThroughputVoid.entityType = prov(ent => extend(TileEntity, {
     update(){
         this.super$update();
 
-        this._window.addValue(this._i * (this.global.delta ? 60 / Time.delta(): 60));
+        this._window.addValue(this._i * (getDelta() ? 60 / Time.delta(): 60));
         this._i = 0;
 
         this.updateThroughput();
