@@ -1,5 +1,6 @@
 //dpsBlock
 this.global.noPierce = false;
+const getPierce = () => this.global.noPierce;
 const dpsUnit = new UnitType("dps-unit", prov(a => extend(GroundUnit, {
     //this.spawner = bad
 
@@ -26,7 +27,7 @@ const dpsUnit = new UnitType("dps-unit", prov(a => extend(GroundUnit, {
     onHit(b){
         this.super$onHit(b);
         if(!(b instanceof Bullet)) return;
-        if(b.getBulletType().pierce && this.global.noPierce) b.remove();
+        if(b.getBulletType().pierce && getPierce()) b.remove();
     },
 
     countsAsEnemy(){ return false },
