@@ -1,14 +1,16 @@
 const mechTester = extendContent(Block, "mech-tester", {
+    //hacky way because configured() only uses int
+    //everything else is done in configured() because it is a serverside method
     buildConfiguration(tile, table){
         table.addImageButton(Icon.wrench, Styles.clearTransi, run(() => {
-            tile.configure(0);
-        })).size(50).disabled(boolf(b => tile.entity == null));
+            this.pick(tile)
+        })).size(50).disabled(boolf(b => tile.ent() == null));
 
         table.addImageButton(Icon.defense, Styles.clearTransi, run(() => {
-            tile.configure(1);
-        })).size(50).disabled(boolf(b => tile.entity == null));
+            Vars.ui.showTextInput("Team", "Set Team", 3, "1" - Vars.content.getBy(ContentType.mech).size, cons(input => tile.configure(parseInt(input) + Vars.content.getBy(ContentType.mech).size)));
+        })).size(50).disabled(boolf(b => tile.ent() == null));
     },
-    pick(tile, player){
+    pick(tile){
         const dialog = new FloatingDialog("");
         dialog.setFillParent(true);
         dialog.cont.pane(cons(p => {
@@ -21,7 +23,7 @@ const mechTester = extendContent(Block, "mech-tester", {
                     t.addImage(type.icon(Cicon.medium)).size(40).padRight(2);
                     t.add(type.localizedName);
                 }), run(() => {
-                    player.mech = type;
+                    tile.configure(type.id)
                     dialog.hide();
                 })).pad(2).margin(12).fillX();
                 if(++i % 3 == 0) p.row();
@@ -31,13 +33,11 @@ const mechTester = extendContent(Block, "mech-tester", {
         dialog.show();
     },
     configured(tile, player, value){
-        //yes im terrible at this
-        var handle = [
-            (tile, player) => this.pick(tile, player),
-            (tile, player) => Vars.ui.showTextInput("", "", 3, player.team.id, cons(input => player.team = Team.get(input.valueOf()) ))
-        ];
-
-        handle[value](tile, player);
+        if(value > Vars.content.getBy(ContentType.mech).size) {
+            player.team = Team.get(value - Vars.content.mechs().size);
+        } else {
+            player.mech = Vars.content.getByID(ContentType.mech, value)
+        }
     }
 });
 

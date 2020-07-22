@@ -6,16 +6,16 @@ const unitSpawner = extendContent(Block, "unit-spawner", {
 
     buildConfiguration(tile, table){
         table.addImageButton(Icon.wrench, Styles.clearTransi, run(() => {
-            tile.configure(0);
-        })).size(50).disabled(boolf(b => tile.entity == null));
+            this.pick(tile)
+        })).size(50).disabled(boolf(b => tile.ent() == null));
 
         table.addImageButton(Icon.upOpen, Styles.clearTransi, run(() => {
-            tile.configure(1);
-        })).size(50).disabled(boolf(b => tile.entity == null));
+            tile.configure(-1);
+        })).size(50).disabled(boolf(b => tile.ent() == null));
 
         table.addImageButton(Icon.defense, Styles.clearTransi, run(() => {
-            tile.configure(2);
-        })).size(50).disabled(boolf(b => tile.entity == null));
+            Vars.ui.showTextInput("Team", "Set Team", 3, tile.ent().team().id, cons(input => tile.configure(parseInt(input) + Vars.content.units().size)));
+        })).size(50).disabled(boolf(b => tile.ent() == null));
     },
     pick(tile){
         const dialog = new FloatingDialog("");
@@ -30,7 +30,7 @@ const unitSpawner = extendContent(Block, "unit-spawner", {
                     t.addImage(type.icon(Cicon.medium)).size(40).padRight(2);
                     t.add(type.localizedName);
                 }), run(() => {
-                    tile.entity.setUnit(type);
+                    tile.configure(type.id);
                     dialog.hide();
                 })).pad(2).margin(12).fillX();
                 if(++i % 3 == 0) p.row();
@@ -40,18 +40,15 @@ const unitSpawner = extendContent(Block, "unit-spawner", {
         dialog.show();
     },
     configured(tile, player, value){
-        //yes im terrible at this
-        var handle = [
-            (tile) => this.pick(tile),
-            (tile) => {
-                var unit = tile.entity.unit().create(tile.entity.team());
-                unit.set(tile.entity.getX(), tile.entity.getY());
-                unit.add();
-            },
-            (tile) => tile.entity.setTeam((tile.entity.team().id + 1) > 5 ? 0 : tile.entity.team().id + 1)
-        ];
-
-        handle[value](tile);
+        if(value == -1){
+            var unit = tile.ent().unit().create(tile.entity.team());
+            unit.set(tile.ent().getX(), tile.entity.getY());
+            unit.add();
+        } else if(value > Vars.content.units().size){
+            tile.ent().setTeam(value - Vars.content.units().size);
+        } else {
+            tile.ent().setUnit(Vars.content.getByID(ContentType.unit, value))
+        }
     },
 
     drawLayer(tile){
