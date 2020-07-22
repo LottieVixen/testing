@@ -1,5 +1,5 @@
 //quezler's throughput ported to 5.0
-this.global.delta = false;
+this.global.delta = true;
 const getDelta = () => this.global.delta;
 const throughputVoid = extendContent(ItemVoid, "throughput-void", {
     setBars(){
