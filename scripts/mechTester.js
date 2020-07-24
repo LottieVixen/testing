@@ -7,7 +7,7 @@ const mechTester = extendContent(Block, "mech-tester", {
         })).size(50).disabled(boolf(b => tile.ent() == null));
 
         table.addImageButton(Icon.defense, Styles.clearTransi, run(() => {
-            Vars.ui.showTextInput("Team", "Set Team", 3, "1" - Vars.content.getBy(ContentType.mech).size, cons(input => tile.configure(parseInt(input) + Vars.content.getBy(ContentType.mech).size)));
+            Vars.ui.showTextInput("Team", "Set Team", 3, 1, cons(input => tile.configure(parseInt(input) + Vars.content.getBy(ContentType.mech).size)));
         })).size(50).disabled(boolf(b => tile.ent() == null));
     },
     pick(tile){
@@ -34,7 +34,7 @@ const mechTester = extendContent(Block, "mech-tester", {
     },
     configured(tile, player, value){
         if(value > Vars.content.getBy(ContentType.mech).size) {
-            player.team = Team.get(value - Vars.content.mechs().size);
+            player.team = Team.get(value - Vars.content.getBy(ContentType.mech).size);
         } else {
             player.mech = Vars.content.getByID(ContentType.mech, value)
         }
