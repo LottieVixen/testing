@@ -19,6 +19,10 @@ const dpsUnit = new UnitType("dps-unit", prov(a => extend(GroundUnit, {
         this.target = null;
     },
     update(){
+        if(this._owner == null) {
+            this._owner = this.tileOn();
+            this._ownerEnt = this.tileOn().ent();
+        }
         if(this._owner.entity != this._ownerEnt) this.setDead(true);
         if(this.isDead()) {
             this.remove();
@@ -28,16 +32,6 @@ const dpsUnit = new UnitType("dps-unit", prov(a => extend(GroundUnit, {
         this.super$onHit(b);
         if(!(b instanceof Bullet)) return;
         if(b.getBulletType().pierce && getPierce()) b.remove();
-    },
-    read(stream){
-        this.super$read(stream);
-        this.setOwner(this.tileOn());
-        this._ownerEnt = this.tileOn().ent();
-    },
-    readSave(data){
-        this.super$readSave(data);
-        this.setOwner(this.tileOn());
-        this._ownerEnt = this.tileOn().ent();
     },
 
     countsAsEnemy(){ return false },
