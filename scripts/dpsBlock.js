@@ -105,7 +105,7 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
 dpsBlock.health = 1;
 dpsBlock.solid = false;
 dpsBlock.buildVisibility = BuildVisibility.sandboxOnly;
-dpsBlock.requirements = [new ItemStack(Items.copper, 1)];
+dpsBlock.requirements(Category.defense, ItemStack.with(Items.copper, 1));
 dpsBlock.size = 1;
 dpsBlock.update = true;
 dpsBlock.layer = Layer.overlay;

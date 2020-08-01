@@ -46,7 +46,7 @@ dpsTurret.entityType = prov(() => {
 
 dpsTurret.health = 100;
 dpsTurret.reload = 10;
-dpsTurret.size = 2;
+dpsTurret.size = 1;
 dpsTurret.category = Category.turret;
 dpsTurret.shootCone = 22.5;
 dpsTurret.buildVisibility = BuildVisibility.sandboxOnly;

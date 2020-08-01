@@ -76,7 +76,7 @@ unitSpawner.layer = Layer.overlay;
 unitSpawner.solid = false;
 unitSpawner.configurable = true;
 unitSpawner.buildVisibility = BuildVisibility.sandboxOnly;
-unitSpawner.requirements = [new ItemStack(Items.copper, 1)];
+unitSpawner.requirements(Category.units, ItemStack.with(Items.copper, 1));
 unitSpawner.size = 1;
 unitSpawner.update = true;
 unitSpawner.localizedName = "Unit Spawner";

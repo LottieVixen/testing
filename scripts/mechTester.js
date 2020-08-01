@@ -45,7 +45,7 @@ mechTester.health = 1;
 mechTester.solid = false;
 mechTester.configurable = true;
 mechTester.buildVisibility = BuildVisibility.sandboxOnly;
-mechTester.requirements = [new ItemStack(Items.copper, 1)];
+mechTester.requirements(Category.upgrade, ItemStack.with(Items.copper, 1));
 mechTester.size = 1;
 mechTester.update = true;
 mechTester.localizedName = "Mech Tester";

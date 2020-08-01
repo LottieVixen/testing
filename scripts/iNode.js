@@ -16,7 +16,7 @@ const iNode = extendContent(PowerNode, "info-node", {
 iNode.health = 1;
 iNode.maxNodes = 99;
 iNode.buildVisibility = BuildVisibility.sandboxOnly;
-iNode.requirements = [new ItemStack(Items.copper, 1)];
+iNode.requirements(Category.power, ItemStack.with(Items.copper, 1));
 iNode.size = 1;
 iNode.update = true;
 iNode.localizedName = "Info Node";

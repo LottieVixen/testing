@@ -91,7 +91,7 @@ liquidThroughputVoid.entityType = prov(ent => extend(TileEntity, {
 
 liquidThroughputVoid.health = 1;
 liquidThroughputVoid.buildVisibility = BuildVisibility.sandboxOnly;
-liquidThroughputVoid.requirements = [new ItemStack(Items.copper, 1)];
+liquidThroughputVoid.requirements(Category.liquid, ItemStack.with(Items.copper, 1));
 liquidThroughputVoid.size = 1;
 liquidThroughputVoid.update = true;
 liquidThroughputVoid.localizedName = "Liquid display void";
