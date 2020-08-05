@@ -1,7 +1,12 @@
 //dpsBlock
-this.global.noPierce = false;
-const getPierce = () => this.global.noPierce;
-const dpsUnit = new UnitType("dps-unit", prov(a => extend(GroundUnit, {
+//this.global.noPierce = false;
+//const getPierce = () => this.global.noPierce;
+const dpsUnit = extendContent(UnitType, "dps-unit", {
+    isHidden(){
+        return true;
+    }
+});
+dpsUnit.constructor = () => extend(Unit, {
     //this.spawner = bad
 
     _owner: null,
@@ -13,7 +18,7 @@ const dpsUnit = new UnitType("dps-unit", prov(a => extend(GroundUnit, {
     },
     setOwner(tile){
         this._owner = tile;
-        this._ownerEnt = tile.ent();
+        this._ownerEnt = tile.bc();
     },
     updateTargeting(){
         this.target = null;
@@ -21,10 +26,12 @@ const dpsUnit = new UnitType("dps-unit", prov(a => extend(GroundUnit, {
     update(){
         if(this._owner == null) {
             this._owner = this.tileOn();
-            this._ownerEnt = this.tileOn().ent();
+            this._ownerEnt = this.tileOn().bc();
         }
-        if(this._owner.entity != this._ownerEnt) this.setDead(true);
+        if(this._owner.bc() != this._ownerEnt) this.setDead(true);
+        print("ohno")
         if(this.isDead()) {
+            print("ohno")
             this.remove();
         }
     },
@@ -35,43 +42,33 @@ const dpsUnit = new UnitType("dps-unit", prov(a => extend(GroundUnit, {
     },
 
     countsAsEnemy(){ return false },
-    drawAll(){}
-})));
+    draw(){}
+});
 
 dpsUnit.drag = 1;
 dpsUnit.speed = 0;
 dpsUnit.maxVelocity = 0;
 dpsUnit.range = 0;
 dpsUnit.health = 1;
-dpsUnit.weapon = UnitTypes.draug.weapon;
 
 const dpsBlock = extendContent(Wall, "dps-wall", {
-    placed(tile){
-        this.super$placed(tile);
-
-        if(Vars.net.client()) return;
-        var unit = dpsUnit.create(Team.crux);
-        unit.set(tile.drawx(), tile.drawy());
-        unit.setOwner(tile);
-        unit.add();
-    },
     setBars() {
         this.super$setBars();
 
-        this.bars.add("dps", func(entity => new Bar(
-            prov(()=>"DPS: " + Strings.fixed(entity.dps2(), 2)),
-            prov(() => Pal.items),
-            floatp(() => 1)
-        )));
+        this.bars.add("dps", entity => new Bar(
+            ()=>"DPS: " + Strings.fixed(entity.dps2(), 2),
+            () => Pal.items,
+            () => 1
+        ));
 
-        this.bars.add("dpsp", func(entity => new Bar(
-            prov(()=>"DPSp: " + Strings.fixed(entity.dps(), 2) + "/s"),
-            prov(() => Pal.items),
-            floatp(() => 1)
-        )));
+        this.bars.add("dpsp", entity => new Bar(
+            () => "DPSp: " + Strings.fixed(entity.dps(), 2) + "/s",
+            () => Pal.items,
+            () => 1
+        ));
     }
 });
-dpsBlock.entityType = prov(()=>extend(TileEntity, {
+dpsBlock.entityType = () => extend(Building, {
     _i: 0,
     _window: new WindowedMean(60*10),
     _dps: 0,
@@ -83,7 +80,7 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
     damage(damage){ this.iIncrement(damage) },
 
     updateDps() {
-        this._dps2 = this._window.getMean();
+        this._dps2 = this._window.mean();
         if(!this._window.hasEnoughData()) return;
         var val = this._window.getWindowValues().slice(30, 570);
         var m = 0;
@@ -95,21 +92,27 @@ dpsBlock.entityType = prov(()=>extend(TileEntity, {
     update() {
         this.super$update();
 
-        this._window.addValue(this._i * 60);
+        this._window.add(this._i * 60);
         this._i = 0;
 
         this.updateDps();
+    },
+    created(){
+        if(Vars.net.client()) return;
+        var unit = dpsUnit.create(Team.crux);
+        unit.set(this.getX(), this.getY());
+        unit.setOwner(this.tile);
+        unit.add();
     }
-}));
+});
 
 dpsBlock.health = 1;
 dpsBlock.solid = false;
 dpsBlock.buildVisibility = BuildVisibility.sandboxOnly;
-dpsBlock.requirements(Category.defense, ItemStack.with(Items.copper, 1));
+dpsBlock.requirements = ItemStack.with(Items.copper, 1);
 dpsBlock.size = 1;
 dpsBlock.update = true;
-dpsBlock.layer = Layer.overlay;
 dpsBlock.localizedName = "Dps block";
 dpsBlock.description = "Measures damage per second over a minute. Type t!flying in chat to toggle flying.\n\nSecond value shows percentile";
 
-this.global.dpsUnit = dpsUnit;
+//this.global.dpsUnit = dpsUnit;

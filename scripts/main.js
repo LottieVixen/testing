@@ -1,10 +1,11 @@
-require("unitSpawner");
-require("dpsTurret")
-require("iNode");
+//require("unitSpawner");
+//require("dpsTurret")
+//require("iNode");
 require("dpsBlock");
-require("throughputVoid");
-require("mechTester")
+//require("throughputVoid");
+//require("mechTester")
 
+/*
 if(!this.global.done){
     this.global.done = true;
     Events.on(EventType.PlayerChatEvent, cons(e=>{
@@ -22,5 +23,5 @@ if(!this.global.done){
         }
     }));
 }
-
+*/
 print("Testing loaded successfully");
