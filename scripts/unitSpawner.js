@@ -81,3 +81,4 @@ unitSpawner.size = 1;
 unitSpawner.update = true;
 unitSpawner.localizedName = "Unit Spawner";
 unitSpawner.description = "";
+unitSpawner.targetable = false;
