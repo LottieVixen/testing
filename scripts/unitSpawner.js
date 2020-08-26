@@ -68,7 +68,7 @@ unitSpawner.entityType = prov(() => extend(TileEntity, {
     setUnit(unit){ this._unit = unit },
     team(){ return this._team },
     setTeam(team){ this._team = Team.get(team) },
-    damage(amount){}
+    damage(amount){},
 
     write(stream){
         this.super$write(stream);
