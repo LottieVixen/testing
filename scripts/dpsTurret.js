@@ -46,7 +46,7 @@ dpsTurret.entityType = prov(() => extendContent(ItemTurret.ItemTurretEntity, dps
             this._dmg = stream.readFloat();
         }
     }
-});
+));
 
 dpsTurret.health = 100;
 dpsTurret.reload = 10;
