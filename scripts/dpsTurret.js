@@ -29,19 +29,23 @@ const dpsTurret = extendContent(ItemTurret, "dps-turret", {
     hasAmmo(tile){ return true },
     peekAmmo(tile){ return Bullets.standardCopper }
 });
-dpsTurret.entityType = prov(() => {
-    var unit = extendContent(ItemTurret.ItemTurretEntity, dpsTurret, {
+dpsTurret.entityType = prov(() => extendContent(ItemTurret.ItemTurretEntity, dpsTurret, {
         _dmg: 10,
         getDmg(){
             return this._dmg;
         },
         setDmg(value){
             this._dmg = value;
+        },
+        write(stream){
+            this.super$write(stream);
+            stream.writeFloat(this._dmg);
+        },
+        read(stream, revision){
+            this.super$read(stream, revision);
+            this._dmg = stream.readFloat();
         }
-
-    });
-    unit.block = dpsTurret;
-    return unit;
+    }
 });
 
 dpsTurret.health = 100;

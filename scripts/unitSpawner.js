@@ -69,6 +69,17 @@ unitSpawner.entityType = prov(() => extend(TileEntity, {
     team(){ return this._team },
     setTeam(team){ this._team = Team.get(team) },
     damage(amount){}
+
+    write(stream){
+        this.super$write(stream);
+        stream.writeShort(this._unit.id);
+        stream.writeShort(this._team.id);
+    },
+    read(stream, revision){
+        this.super$read(stream, revision);
+        this._unit = Vars.content.getByID(ContentType.unit, stream.readShort());
+        this._team = Team.get(stream.readShort());
+    }
 }));
 
 unitSpawner.health = 1;
